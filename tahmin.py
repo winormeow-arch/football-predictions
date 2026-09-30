@@ -82,7 +82,7 @@ def oran_kolonlari(df):
         out = pd.Series(np.nan, index=df.index)
         for a in adaylar:
             if a in df.columns:
-                out = out.fillna(pd.to_numeric(df[a], errors="coerce"))
+                out = out.fillna(pd.to_numeric(df[a], errors="coerce").where(lambda s: s > 1))
         return out
     df["oH"], df["oD"], df["oA"] = sec("AvgH", "BbAvH", "B365H"), sec("AvgD", "BbAvD", "B365D"), sec("AvgA", "BbAvA", "B365A")
     df["oU"], df["oAlt"] = sec("Avg>2.5", "BbAv>2.5", "B365>2.5"), sec("Avg<2.5", "BbAv<2.5", "B365<2.5")
