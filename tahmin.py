@@ -42,7 +42,10 @@ def csv_indir(url):
         try:
             r = requests.get(url, headers=UA, timeout=60)
             if r.status_code == 200 and len(r.content) > 100:
-                return pd.read_csv(io.BytesIO(r.content), encoding="latin-1", on_bad_lines="skip")
+                df = pd.read_csv(io.BytesIO(r.content), encoding="latin-1", on_bad_lines="skip")
+                # fixtures.csv basinda gorunmez BOM isareti var: "ï»¿Div" -> "Div"
+                df.columns = [str(c).replace("ï»¿", "").replace("\ufeff", "").strip() for c in df.columns]
+                return df
             return None
         except Exception as e:
             print("indirme hatasi", url, e)
