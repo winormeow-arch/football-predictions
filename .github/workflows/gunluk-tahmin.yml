@@ -1,0 +1,39 @@
+name: Gunluk tahmin
+
+on:
+  schedule:
+    - cron: "0 5 * * *"    # 08:00 TSİ
+    - cron: "0 14 * * *"   # 17:00 TSİ (öğleden sonra eklenen maçlar/oranlar için)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gunluk-tahmin
+  cancel-in-progress: false
+
+jobs:
+  tahmin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Paketler
+        run: pip install pandas numpy scikit-learn requests
+
+      - name: Tahminleri üret
+        run: python tahmin.py
+
+      - name: Kaydet
+        run: |
+          git config user.name "tahmin-bot"
+          git config user.email "tahmin-bot@users.noreply.github.com"
+          git add docs/
+          git commit -m "Tahminler $(date -u +'%Y-%m-%d %H:%M')" || echo "Değişiklik yok"
+          git pull --rebase
+          git push
