@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Günün Maç Tahminleri</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --kagit:#F2F4F7; --kart:#FFFFFF; --murekkep:#13213C; --soluk:#5E6A7E; --cizgi:#DCE1E8;
+  --ev:#2B63D9; --beraber:#8A94A3; --dep:#D9961A; --deger:#1E8E5A;
+  --yazi:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --baslik:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --kagit:#0F1726; --kart:#172238; --murekkep:#E8EDF5; --soluk:#94A1B5; --cizgi:#26334C;
+  --ev:#5B8BF0; --beraber:#7C8799; --dep:#E8AB3C; --deger:#3DBB80;}}
+:root[data-theme="dark"]{--kagit:#0F1726; --kart:#172238; --murekkep:#E8EDF5; --soluk:#94A1B5; --cizgi:#26334C;
+  --ev:#5B8BF0; --beraber:#7C8799; --dep:#E8AB3C; --deger:#3DBB80;}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--kagit);color:var(--murekkep);font:16px/1.45 var(--yazi)}
+main{max-width:720px;margin:0 auto;padding:20px 14px 60px}
+h1{font:700 2.4rem/1 var(--baslik);margin:0;letter-spacing:.2px}
+.alt{color:var(--soluk);font-size:.9rem;margin:6px 0 18px}
+.filtre{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.filtre button,.filtre select{font:600 .95rem var(--yazi);color:var(--murekkep);background:var(--kart);
+  border:1px solid var(--cizgi);border-radius:999px;padding:7px 14px;min-height:38px}
+.filtre button[aria-pressed="true"]{background:var(--murekkep);color:var(--kagit);border-color:var(--murekkep)}
+.filtre select{border-radius:10px;max-width:100%}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--ev);outline-offset:2px}
+.gun{font:700 1.5rem/1 var(--baslik);margin:26px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--murekkep)}
+.lig{font:600 1.05rem var(--baslik);color:var(--soluk);margin:16px 0 6px}
+.mac{background:var(--kart);border:1px solid var(--cizgi);border-radius:12px;padding:12px 12px 10px;margin-bottom:8px}
+.ust{display:flex;align-items:baseline;gap:10px}
+.saat{font:600 1rem var(--baslik);color:var(--soluk);min-width:42px}
+.takimlar{flex:1;font:600 1.2rem/1.15 var(--baslik)}
+.takimlar span{color:var(--soluk);font-weight:500}
+.rozet{font:700 1.1rem var(--baslik);min-width:34px;text-align:center;border-radius:8px;padding:2px 8px;color:#fff}
+.bar{display:flex;height:26px;border-radius:7px;overflow:hidden;margin:10px 0 6px;font:600 .82rem var(--yazi);color:#fff}
+.bar div{display:flex;align-items:center;justify-content:center;min-width:0;white-space:nowrap;overflow:hidden}
+.b1{background:var(--ev)}.bX{background:var(--beraber)}.b2{background:var(--dep)}
+.bilgi{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.85rem;color:var(--soluk)}
+.bilgi b{color:var(--murekkep);font-weight:600}
+.deger{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.deger span{font-size:.82rem;font-weight:600;color:var(--deger);border:1.5px solid var(--deger);border-radius:6px;padding:1px 7px}
+.uyari{font-size:.8rem;color:var(--dep);margin-top:6px}
+details{background:var(--kart);border:1px solid var(--cizgi);border-radius:12px;padding:10px 14px;margin:14px 0}
+summary{font:600 1.05rem var(--baslik);cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:8px}
+td,th{padding:5px 4px;border-bottom:1px solid var(--cizgi);text-align:right}
+td:first-child,th:first-child{text-align:left}
+.not{font-size:.85rem;color:var(--soluk)}
+.bos{text-align:center;color:var(--soluk);padding:40px 10px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Günün maç tahminleri</h1>
+  <p class="alt" id="guncel">Yükleniyor…</p>
+
+  <div class="filtre" role="group" aria-label="Gün">
+    <button data-gun="bugun" aria-pressed="true">Bugün</button>
+    <button data-gun="yarin" aria-pressed="false">Yarın</button>
+    <button data-gun="hepsi" aria-pressed="false">Tüm günler</button>
+  </div>
+  <div class="filtre">
+    <select id="lig" aria-label="Lig"><option value="">Tüm ligler</option></select>
+    <button id="sadeceDeger" aria-pressed="false">Sadece değerli</button>
+  </div>
+
+  <details id="karne">
+    <summary>Model ne kadar iyi?</summary>
+    <div id="karneIc"></div>
+  </details>
+
+  <div id="liste"></div>
+</main>
+
+<script>
+const durum = {gun: "bugun", lig: "", deger: false, veri: null};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const yuzde = x => Math.round(x * 100) + "%";
+const bugunStr = (ek = 0) => {
+  const d = new Date(Date.now() + ek * 864e5);
+  return new Intl.DateTimeFormat("en-CA", {timeZone: "Europe/Istanbul"}).format(d);
+};
+const gunAdi = t => new Date(t + "T12:00:00").toLocaleDateString("tr-TR", {weekday: "long", day: "numeric", month: "long"});
+const renk = {"1": "var(--ev)", "X": "var(--beraber)", "2": "var(--dep)"};
+const secimAdi = {"1": "MS 1", "X": "MS X", "2": "MS 2", "U": "2.5 Üst", "A": "2.5 Alt"};
+
+function karne(v) {
+  const d = v.dogrulama || {}, a = v.arsiv || {};
+  let h = `<table><tr><th></th><th>Model</th><th>Bahisçi</th></tr>
+    <tr><td>1X2 isabet</td><td>${yuzde(d.model_1x2_isabet||0)}</td><td>${yuzde(d.bahisci_1x2_isabet||0)}</td></tr>
+    <tr><td>1X2 log-kayıp (düşük iyi)</td><td>${d.model_1x2_logloss}</td><td>${d.bahisci_1x2_logloss}</td></tr>
+    <tr><td>2.5 Ü/A isabet</td><td>${yuzde(d.model_ust_isabet||0)}</td><td>${yuzde(d.bahisci_ust_isabet||0)}</td></tr>
+    <tr><td>2.5 Ü/A log-kayıp</td><td>${d.model_ust_logloss}</td><td>${d.bahisci_ust_logloss}</td></tr></table>
+    <p class="not">Son ${d.test_mac} maçlık, modelin görmediği dönemde ölçüldü. Model, olasılık kalitesinde bahisçiyi geçemediği pazarda “değerli” işareti koymaz.</p>`;
+  if (a.notlanan) {
+    h += `<table><tr><th>Sitenin kendi tahminleri</th><th></th></tr>
+      <tr><td>Sonuçlanan maç</td><td>${a.notlanan}</td></tr>
+      <tr><td>1X2 isabet</td><td>${yuzde(a.isabet_1x2)}</td></tr>
+      <tr><td>2.5 Ü/A isabet</td><td>${yuzde(a.isabet_ust_alt)}</td></tr>
+      <tr><td>Değerli seçim sayısı</td><td>${a.deger_bahis}</td></tr>
+      <tr><td>Değerli seçim kârı (1 birim sabit)</td><td>${a.deger_kar_birim} birim${a.deger_roi != null ? " (" + yuzde(a.deger_roi) + ")" : ""}</td></tr></table>`;
+  } else {
+    h += `<p class="not">Sitenin kendi tahminleri, maçlar oynandıkça burada notlanacak.</p>`;
+  }
+  document.getElementById("karneIc").innerHTML = h;
+}
+
+function ciz() {
+  const v = durum.veri; if (!v) return;
+  let maclar = v.maclar;
+  if (durum.gun === "bugun") maclar = maclar.filter(m => m.tarih === bugunStr());
+  if (durum.gun === "yarin") maclar = maclar.filter(m => m.tarih === bugunStr(1));
+  if (durum.lig) maclar = maclar.filter(m => m.lig === durum.lig);
+  if (durum.deger) maclar = maclar.filter(m => m.deger.length);
+  const kutu = document.getElementById("liste");
+  if (!maclar.length) {
+    kutu.innerHTML = `<p class="bos">${v.maclar.length ? "Bu seçimde maç yok. Başka bir gün ya da lig seçin." : "Kaynakta henüz yaklaşan maç yok. Liste günde iki kez yenilenir."}</p>`;
+    return;
+  }
+  let h = "", sonGun = "", sonLig = "";
+  for (const m of maclar) {
+    if (m.tarih !== sonGun) { h += `<h2 class="gun">${esc(gunAdi(m.tarih))}</h2>`; sonGun = m.tarih; sonLig = ""; }
+    if (m.lig !== sonLig) { h += `<h3 class="lig">${esc(m.lig)}</h3>`; sonLig = m.lig; }
+    const p = m.olasilik, o = m.oran;
+    const oranTxt = ["1","X","2"].map(k => o[k] ? `${k} <b>${o[k].toFixed(2)}</b>` : "").join(" &nbsp;");
+    h += `<article class="mac">
+      <div class="ust"><span class="saat">${esc(m.saat)}</span>
+        <div class="takimlar">${esc(m.ev)} <span>–</span> ${esc(m.dep)}</div>
+        <span class="rozet" style="background:${renk[m.tahmin]}" title="Tahmin">${esc(m.tahmin)}</span></div>
+      <div class="bar" role="img" aria-label="Ev ${yuzde(p["1"])}, beraberlik ${yuzde(p.X)}, deplasman ${yuzde(p["2"])}">
+        <div class="b1" style="width:${p["1"]*100}%">${p["1"] >= .12 ? "1 " + yuzde(p["1"]) : ""}</div>
+        <div class="bX" style="width:${p.X*100}%">${p.X >= .12 ? "X " + yuzde(p.X) : ""}</div>
+        <div class="b2" style="width:${p["2"]*100}%">${p["2"] >= .12 ? "2 " + yuzde(p["2"]) : ""}</div></div>
+      <div class="bilgi"><span>${esc(m.ust_alt)} <b>${yuzde(Math.max(p.U, p.A))}</b></span><span>Ort. oran: ${oranTxt}</span></div>
+      ${m.deger.length ? `<div class="deger">${m.deger.map(d => `<span>${secimAdi[d.secim]} @ ${d.oran.toFixed(2)} · +${Math.round(d.beklenen*100)}%</span>`).join("")}</div>` : ""}
+      ${m.az_veri ? `<div class="uyari">Takımlardan birinin bu ligde az maçı var; tahmin çoğunlukla orana dayanıyor.</div>` : ""}
+    </article>`;
+  }
+  kutu.innerHTML = h;
+}
+
+document.querySelectorAll("[data-gun]").forEach(b => b.addEventListener("click", () => {
+  durum.gun = b.dataset.gun;
+  document.querySelectorAll("[data-gun]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  ciz();
+}));
+document.getElementById("lig").addEventListener("change", e => { durum.lig = e.target.value; ciz(); });
+document.getElementById("sadeceDeger").addEventListener("click", e => {
+  durum.deger = !durum.deger; e.target.setAttribute("aria-pressed", durum.deger); ciz();
+});
+
+fetch("tahminler.json?t=" + Date.now()).then(r => r.json()).then(v => {
+  durum.veri = v;
+  document.getElementById("guncel").textContent = `Son güncelleme: ${v.guncelleme} (TSİ) · ${v.maclar.length} yaklaşan maç`;
+  const ligler = [...new Set(v.maclar.map(m => m.lig))].sort((a, b) => a.localeCompare(b, "tr"));
+  document.getElementById("lig").innerHTML += ligler.map(l => `<option>${esc(l)}</option>`).join("");
+  if (!v.maclar.some(m => m.tarih === bugunStr())) {
+    durum.gun = "hepsi";
+    document.querySelectorAll("[data-gun]").forEach(x => x.setAttribute("aria-pressed", x.dataset.gun === "hepsi"));
+  }
+  karne(v); ciz();
+}).catch(() => {
+  document.getElementById("guncel").textContent = "Tahmin dosyası henüz oluşmadı. GitHub'da Actions sekmesinden “Gunluk tahmin”i bir kez elle çalıştırın.";
+});
+</script>
+</body>
+</html>
