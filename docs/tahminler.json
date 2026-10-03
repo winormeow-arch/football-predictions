@@ -1,5 +1,5 @@
 {
- "guncelleme": "2026-10-02 21:45",
+ "guncelleme": "2026-10-03 13:06",
  "dogrulama": {
   "test_mac": 3295,
   "model_1x2_isabet": 0.509,
@@ -22,33 +22,6 @@
   "deger_roi": null
  },
  "maclar": [
-  {
-   "lig": "İspanya Segunda",
-   "div": "SP2",
-   "tarih": "2026-10-02",
-   "saat": "21:30",
-   "tarih_uk": "2026-10-02",
-   "ev": "Eldense",
-   "dep": "Oviedo",
-   "olasilik": {
-    "1": 0.388,
-    "X": 0.328,
-    "2": 0.284,
-    "U": 0.382,
-    "A": 0.618
-   },
-   "tahmin": "1",
-   "ust_alt": "A2.5",
-   "oran": {
-    "1": 2.43,
-    "X": 2.94,
-    "2": 2.96,
-    "U": 2.48,
-    "A": 1.49
-   },
-   "deger": [],
-   "az_veri": false
-  },
   {
    "lig": "İngiltere League Two",
    "div": "E3",
